@@ -1,3 +1,3 @@
-module layout.go
+module GoLayout
 
 go 1.16
