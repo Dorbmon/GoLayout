@@ -37,11 +37,13 @@ func (z *LayItem) SetBehave(behave C.uint) {
 func (z *LayItem) Insert(obj *LayItem) {
 	C.lay_insert(&obj.ctx.ctx, z.layId, obj.layId)
 }
+
 type Rect struct {
-	x1,y1,x2,y2 int
+	x1, y1, x2, y2 int
 }
+
 //GetRect get the result of the calculation
-func (z *LayItem) GetRect() (ret Rect){
+func (z *LayItem) GetRect() (ret Rect) {
 	res := C.GetRect(&z.ctx.ctx, z.layId)
 	ret.x1 = int(res.x1)
 	ret.y1 = int(res.y1)
