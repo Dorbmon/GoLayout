@@ -15,6 +15,33 @@ struct Rect GetRect(lay_context* ctx,lay_id id) {
 	ret.y2 = result[3];
 	return ret;
 }
+struct WH {
+	int16_t w,h;
+};
+struct WH GetSize(lay_context* ctx,lay_id id) {
+	struct WH ret;
+	lay_vec2 res = lay_get_size(ctx,id);
+	ret.w = res[0];
+	ret.h = res[1];
+	return ret;
+}
+struct WH GetSizeXY(lay_context* ctx,lay_id id) {
+	struct WH ret;
+	lay_get_size_xy(ctx,id,&ret.w,&ret.h);
+	return ret;
+}
+struct Margins {
+	int16_t l,t,r,b;
+};
+struct Margins GetMargins(lay_context* ctx,lay_id id) {
+	struct Margins ret;
+	lay_get_margins_ltrb(ctx,id,&ret.l,&ret.t,&ret.r,&ret.b);
+	return ret;
+}
+void SetMargins(lay_context *ctx,lay_id id, lay_scalar l, lay_scalar t, lay_scalar r, lay_scalar b) {
+	lay_set_margins_ltrb(ctx,id,l,t,r,b);
+	return;
+}
 */
 import "C"
 
@@ -37,7 +64,31 @@ func (z *LayItem) SetBehave(behave C.uint) {
 func (z *LayItem) Insert(obj *LayItem) {
 	C.lay_insert(&obj.ctx.ctx, z.layId, obj.layId)
 }
-
+// Calculate only calculate the child of the correct layItem
+func (z *LayItem) Calculate() {
+	C.lay_run_item(&z.ctx.ctx,z.layId)
+}
+func (z *LayItem) Append(other *LayItem) {
+	C.lay_append(&z.ctx.ctx,z.layId,other.layId)
+}
+func (z *LayItem) Push(other *LayItem) {
+	C.lay_push(&z.ctx.ctx,z.layId,other.layId)
+}
+func (z *LayItem) GetSize() (w,h int32){
+	res := C.GetSize(&z.ctx.ctx,z.layId)
+	return int32(res.w),int32(res.h)
+}
+func (z *LayItem) GetSizeXY() (w,h int32){
+	res := C.GetSizeXY(&z.ctx.ctx,z.layId)
+	return int32(res.w),int32(res.h)
+}
+func (z *LayItem) GetMargins() (l,t,r,b int16){
+	res := C.GetMargins(&z.ctx.ctx,z.layId)
+	return int16(res.l),int16(res.t),int16(res.r),int16(res.b)
+}
+func (z *LayItem) SetMargins(l,t,r,b int16) {
+	C.SetMargins(&z.ctx.ctx,z.layId,C.short(l),C.short(t),C.short(r),C.short(b))
+}
 type Rect struct {
 	x1, y1, x2, y2 int
 }

@@ -15,7 +15,7 @@ const (
 	// LayBottom anchor to bottom item or bottom side of parent
 	LayBottom = 0x100
 	// LayHFILL anchor to both left and right item or parent borders
-	LayHFILL = 0x0a0
+	LayHFill = 0x0a0
 	// LayVFill anchor to both top and bottom item or parent borders
 	LayVFill = 0x140
 	// LayHCenter center horizontally with left margin as offset
@@ -31,6 +31,10 @@ const (
 	LayBreak = 0x200
 )
 const (
+	// LayRow left to right
+	LayRow = 0x002
+	// LayColumn top to bottom
+	LayColumn = 0x003
 	// LayLayout free layout
 	LayLayout = 0x000
 	// LayFlex flex model

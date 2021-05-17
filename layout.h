@@ -39,11 +39,7 @@
 #endif
 
 typedef uint32_t lay_id;
-#if LAY_FLOAT == 1
-typedef float lay_scalar;
-#else
 typedef int16_t lay_scalar;
-#endif
 
 #define LAY_INVALID_ID UINT32_MAX
 
