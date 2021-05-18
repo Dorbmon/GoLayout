@@ -20,12 +20,12 @@ func TestAll(t *testing.T) {
 	content_view.SetBehave(LayHFill | LayVFill)
 	ctx.Calculate()
 	r := master_list.GetRect()
-	if r.x1 != 0 || r.y1 != 0 || r.x2 != 400 || r.y2 != 720 {
+	if r.X1 != 0 || r.Y1 != 0 || r.X2 != 400 || r.Y2 != 720 {
 		t.FailNow()
 		return
 	}
 	r = content_view.GetRect()
-	if r.x1 != 400 || r.y1 != 0 || r.x2 != 880 || r.y2 != 720 {
+	if r.X1 != 400 || r.Y1 != 0 || r.X2 != 880 || r.Y2 != 720 {
 		t.FailNow()
 		return
 	}

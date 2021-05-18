@@ -64,42 +64,44 @@ func (z *LayItem) SetBehave(behave C.uint) {
 func (z *LayItem) Insert(obj *LayItem) {
 	C.lay_insert(&obj.ctx.ctx, z.layId, obj.layId)
 }
+
 // Calculate only calculate the child of the correct layItem
 func (z *LayItem) Calculate() {
-	C.lay_run_item(&z.ctx.ctx,z.layId)
+	C.lay_run_item(&z.ctx.ctx, z.layId)
 }
 func (z *LayItem) Append(other *LayItem) {
-	C.lay_append(&z.ctx.ctx,z.layId,other.layId)
+	C.lay_append(&z.ctx.ctx, z.layId, other.layId)
 }
 func (z *LayItem) Push(other *LayItem) {
-	C.lay_push(&z.ctx.ctx,z.layId,other.layId)
+	C.lay_push(&z.ctx.ctx, z.layId, other.layId)
 }
-func (z *LayItem) GetSize() (w,h int32){
-	res := C.GetSize(&z.ctx.ctx,z.layId)
-	return int32(res.w),int32(res.h)
+func (z *LayItem) GetSize() (w, h int32) {
+	res := C.GetSize(&z.ctx.ctx, z.layId)
+	return int32(res.w), int32(res.h)
 }
-func (z *LayItem) GetSizeXY() (w,h int32){
-	res := C.GetSizeXY(&z.ctx.ctx,z.layId)
-	return int32(res.w),int32(res.h)
+func (z *LayItem) GetSizeXY() (w, h int32) {
+	res := C.GetSizeXY(&z.ctx.ctx, z.layId)
+	return int32(res.w), int32(res.h)
 }
-func (z *LayItem) GetMargins() (l,t,r,b int16){
-	res := C.GetMargins(&z.ctx.ctx,z.layId)
-	return int16(res.l),int16(res.t),int16(res.r),int16(res.b)
+func (z *LayItem) GetMargins() (l, t, r, b int16) {
+	res := C.GetMargins(&z.ctx.ctx, z.layId)
+	return int16(res.l), int16(res.t), int16(res.r), int16(res.b)
 }
-func (z *LayItem) SetMargins(l,t,r,b int16) {
-	C.SetMargins(&z.ctx.ctx,z.layId,C.short(l),C.short(t),C.short(r),C.short(b))
+func (z *LayItem) SetMargins(l, t, r, b int16) {
+	C.SetMargins(&z.ctx.ctx, z.layId, C.short(l), C.short(t), C.short(r), C.short(b))
 }
+
 type Rect struct {
-	x1, y1, x2, y2 int
+	X1, Y1, X2, Y2 int
 }
 
 //GetRect get the result of the calculation
 func (z *LayItem) GetRect() (ret Rect) {
 	res := C.GetRect(&z.ctx.ctx, z.layId)
-	ret.x1 = int(res.x1)
-	ret.y1 = int(res.y1)
-	ret.x2 = int(res.x2)
-	ret.y2 = int(res.y2)
+	ret.X1 = int(res.x1)
+	ret.Y1 = int(res.y1)
+	ret.X2 = int(res.x2)
+	ret.Y2 = int(res.y2)
 	return
 }
 func (z *LayItem) SetContain(behave C.uint) {
