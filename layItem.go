@@ -100,8 +100,8 @@ func (z *LayItem) GetRect() (ret Rect) {
 	res := C.GetRect(&z.ctx.ctx, z.layId)
 	ret.X1 = int(res.x1)
 	ret.Y1 = int(res.y1)
-	ret.X2 = int(res.x2)
-	ret.Y2 = int(res.y2)
+	ret.X2 = int(res.x2) + ret.X1
+	ret.Y2 = int(res.y2) + ret.Y1
 	return
 }
 func (z *LayItem) SetContain(behave C.uint) {
