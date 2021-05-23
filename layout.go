@@ -18,8 +18,8 @@ func NewLayout() (ctx Context) {
 func (z *Context) Calculate() {
 	C.lay_run_context(&z.ctx)
 }
-func (z *Context) ReserveItemsCapacity(size uint) {
-	C.lay_reserve_items_capacity(&z.ctx, C.uint(size))
+func (z *Context) ReserveItemsCapacity(size int) {
+	C.lay_reserve_items_capacity(&z.ctx, C.int(size))
 }
 func (z *Context) Reset() {
 	C.lay_reset_context(&z.ctx)

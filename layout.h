@@ -15,8 +15,8 @@
 //
 // All other files in your project should not define LAY_IMPLEMENTATION.
 
-#include <stdint.h>
 
+#include <stdlib.h>
 #ifndef LAY_EXPORT
 #define LAY_EXPORT extern
 #endif
@@ -38,10 +38,10 @@
 #define LAY_STATIC_INLINE inline static
 #endif
 
-typedef uint32_t lay_id;
+typedef int32_t lay_id;
 typedef int16_t lay_scalar;
 
-#define LAY_INVALID_ID UINT32_MAX
+#define LAY_INVALID_ID 2147483647
 
 // GCC and Clang allow us to create vectors based on a type with the
 // vector_size extension. This will allow us to access individual components of
@@ -85,7 +85,7 @@ struct lay_vec2 {
 #endif // __GNUC__/__clang__ or _MSC_VER
 
 typedef struct lay_item_t {
-    uint32_t flags;
+    int32_t flags;
     lay_id first_child;
     lay_id next_sibling;
     lay_vec4 margins;
@@ -344,12 +344,12 @@ LAY_EXPORT void lay_set_size_xy(lay_context *ctx, lay_id item, lay_scalar width,
 // Set the flags on an item which determines how it behaves as a parent. For
 // example, setting LAY_COLUMN will make an item behave as if it were a column
 // -- it will lay out its children vertically.
-LAY_EXPORT void lay_set_contain(lay_context *ctx, lay_id item, uint32_t flags);
+LAY_EXPORT void lay_set_contain(lay_context *ctx, lay_id item, int32_t flags);
 
 // Set the flags on an item which determines how it behaves as a child inside of
 // a parent item. For example, setting LAY_VFILL will make an item try to fill
 // up all available vertical space inside of its parent.
-LAY_EXPORT void lay_set_behave(lay_context *ctx, lay_id item, uint32_t flags);
+LAY_EXPORT void lay_set_behave(lay_context *ctx, lay_id item, int32_t flags);
 
 // Get the margins that were set by lay_set_margins. The _ltrb version writes
 // the output values to the specified addresses instead of returning the values
@@ -553,7 +553,7 @@ void lay_clear_item_break(lay_context *ctx, lay_id item)
 {
     LAY_ASSERT(ctx != NULL);
     lay_item_t *pitem = lay_get_item(ctx, item);
-    pitem->flags = pitem->flags & ~(uint32_t)LAY_BREAK;
+    pitem->flags = pitem->flags & ~(int32_t)LAY_BREAK;
 }
 
 lay_id lay_items_count(lay_context *ctx)
@@ -683,13 +683,13 @@ void lay_set_size(lay_context *ctx, lay_id item, lay_vec2 size)
 {
     lay_item_t *pitem = lay_get_item(ctx, item);
     pitem->size = size;
-    uint32_t flags = pitem->flags;
+    int32_t flags = pitem->flags;
     if (size[0] == 0)
-        flags &= ~(uint32_t)LAY_ITEM_HFIXED;
+        flags &= ~(int32_t)LAY_ITEM_HFIXED;
     else
         flags |= LAY_ITEM_HFIXED;
     if (size[1] == 0)
-        flags &= ~(uint32_t)LAY_ITEM_VFIXED;
+        flags &= ~(int32_t)LAY_ITEM_VFIXED;
     else
         flags |= LAY_ITEM_VFIXED;
     pitem->flags = flags;
@@ -703,30 +703,30 @@ void lay_set_size_xy(
     pitem->size[0] = width;
     pitem->size[1] = height;
     // Kinda redundant, whatever
-    uint32_t flags = pitem->flags;
+    int32_t flags = pitem->flags;
     if (width == 0)
-        flags &= ~(uint32_t)LAY_ITEM_HFIXED;
+        flags &= ~(int32_t)LAY_ITEM_HFIXED;
     else
         flags |= LAY_ITEM_HFIXED;
     if (height == 0)
-        flags &= ~(uint32_t)LAY_ITEM_VFIXED;
+        flags &= ~(int32_t)LAY_ITEM_VFIXED;
     else
         flags |= LAY_ITEM_VFIXED;
     pitem->flags = flags;
 }
 
-void lay_set_behave(lay_context *ctx, lay_id item, uint32_t flags)
+void lay_set_behave(lay_context *ctx, lay_id item, int32_t flags)
 {
     LAY_ASSERT((flags & LAY_ITEM_LAYOUT_MASK) == flags);
     lay_item_t *pitem = lay_get_item(ctx, item);
-    pitem->flags = (pitem->flags & ~(uint32_t)LAY_ITEM_LAYOUT_MASK) | flags;
+    pitem->flags = (pitem->flags & ~(int32_t)LAY_ITEM_LAYOUT_MASK) | flags;
 }
 
-void lay_set_contain(lay_context *ctx, lay_id item, uint32_t flags)
+void lay_set_contain(lay_context *ctx, lay_id item, int32_t flags)
 {
     LAY_ASSERT((flags & LAY_ITEM_BOX_MASK) == flags);
     lay_item_t *pitem = lay_get_item(ctx, item);
-    pitem->flags = (pitem->flags & ~(uint32_t)LAY_ITEM_BOX_MASK) | flags;
+    pitem->flags = (pitem->flags & ~(int32_t)LAY_ITEM_BOX_MASK) | flags;
 }
 void lay_set_margins(lay_context *ctx, lay_id item, lay_vec4 ltrb)
 {
@@ -891,7 +891,7 @@ static void lay_calc_size(lay_context *ctx, lay_id item, int dim)
     case LAY_COLUMN:
     case LAY_ROW:
         // flex model
-        if ((pitem->flags & 1) == (uint32_t)dim) // direction
+        if ((pitem->flags & 1) == (int32_t)dim) // direction
             cal_size = lay_calc_stacked_size(ctx, item, dim);
         else
             cal_size = lay_calc_overlayed_size(ctx, item, dim);
@@ -914,7 +914,7 @@ void lay_arrange_stacked(
     const int wdim = dim + 2;
     lay_item_t *pitem = lay_get_item(ctx, item);
 
-    const uint32_t item_flags = pitem->flags;
+    const int32_t item_flags = pitem->flags;
     lay_vec4 rect = ctx->rects[item];
     lay_scalar space = rect[2 + dim];
 
@@ -923,9 +923,9 @@ void lay_arrange_stacked(
     lay_id start_child = pitem->first_child;
     while (start_child != LAY_INVALID_ID) {
         lay_scalar used = 0;
-        uint32_t count = 0; // count of fillers
-        uint32_t squeezed_count = 0; // count of squeezable elements
-        uint32_t total = 0;
+        int32_t count = 0; // count of fillers
+        int32_t squeezed_count = 0; // count of squeezable elements
+        int32_t total = 0;
         bool hardbreak = false;
         // first pass: count items that need to be expanded,
         // and the space that is used
@@ -933,9 +933,9 @@ void lay_arrange_stacked(
         lay_id end_child = LAY_INVALID_ID;
         while (child != LAY_INVALID_ID) {
             lay_item_t *pchild = lay_get_item(ctx, child);
-            const uint32_t child_flags = pchild->flags;
-            const uint32_t flags = (child_flags & LAY_ITEM_LAYOUT_MASK) >> dim;
-            const uint32_t fflags = (child_flags & LAY_ITEM_FIXED_MASK) >> dim;
+            const int32_t child_flags = pchild->flags;
+            const int32_t flags = (child_flags & LAY_ITEM_LAYOUT_MASK) >> dim;
+            const int32_t fflags = (child_flags & LAY_ITEM_FIXED_MASK) >> dim;
             const lay_vec4 child_margins = pchild->margins;
             lay_vec4 child_rect = ctx->rects[child];
             lay_scalar extend = used;
@@ -1013,9 +1013,9 @@ void lay_arrange_stacked(
         while (child != end_child) {
             lay_scalar ix0, ix1;
             lay_item_t *pchild = lay_get_item(ctx, child);
-            const uint32_t child_flags = pchild->flags;
-            const uint32_t flags = (child_flags & LAY_ITEM_LAYOUT_MASK) >> dim;
-            const uint32_t fflags = (child_flags & LAY_ITEM_FIXED_MASK) >> dim;
+            const int32_t child_flags = pchild->flags;
+            const int32_t flags = (child_flags & LAY_ITEM_LAYOUT_MASK) >> dim;
+            const int32_t fflags = (child_flags & LAY_ITEM_FIXED_MASK) >> dim;
             const lay_vec4 child_margins = pchild->margins;
             lay_vec4 child_rect = ctx->rects[child];
 
@@ -1056,7 +1056,7 @@ void lay_arrange_overlay(lay_context *ctx, lay_id item, int dim)
     lay_id child = pitem->first_child;
     while (child != LAY_INVALID_ID) {
         lay_item_t *pchild = lay_get_item(ctx, child);
-        const uint32_t b_flags = (pchild->flags & LAY_ITEM_LAYOUT_MASK) >> dim;
+        const int32_t b_flags = (pchild->flags & LAY_ITEM_LAYOUT_MASK) >> dim;
         const lay_vec4 child_margins = pchild->margins;
         lay_vec4 child_rect = ctx->rects[child];
 
@@ -1090,7 +1090,7 @@ void lay_arrange_overlay_squeezed_range(
     lay_id item = start_item;
     while (item != end_item) {
         lay_item_t *pitem = lay_get_item(ctx, item);
-        const uint32_t b_flags = (pitem->flags & LAY_ITEM_LAYOUT_MASK) >> dim;
+        const int32_t b_flags = (pitem->flags & LAY_ITEM_LAYOUT_MASK) >> dim;
         const lay_vec4 margins = pitem->margins;
         lay_vec4 rect = ctx->rects[item];
         lay_scalar min_size = lay_scalar_max(0, space - rect[dim] - margins[wdim]);
@@ -1148,7 +1148,7 @@ static void lay_arrange(lay_context *ctx, lay_id item, int dim)
 {
     lay_item_t *pitem = lay_get_item(ctx, item);
 
-    const uint32_t flags = pitem->flags;
+    const int32_t flags = pitem->flags;
     switch (flags & LAY_ITEM_BOX_MODEL_MASK) {
     case LAY_COLUMN | LAY_WRAP:
         if (dim != 0) {
@@ -1166,7 +1166,7 @@ static void lay_arrange(lay_context *ctx, lay_id item, int dim)
         break;
     case LAY_COLUMN:
     case LAY_ROW:
-        if ((flags & 1) == (uint32_t)dim) {
+        if ((flags & 1) == (int32_t)dim) {
             lay_arrange_stacked(ctx, item, dim, false);
         } else {
             const lay_vec4 rect = ctx->rects[item];

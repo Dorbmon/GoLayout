@@ -58,8 +58,8 @@ func NewLayItem(ctx *Context) (ret LayItem) {
 func (z *LayItem) SetSizeXY(x, y int32) {
 	C.lay_set_size_xy(&z.ctx.ctx, z.layId, C.short(x), C.short(y))
 }
-func (z *LayItem) SetBehave(behave C.uint) {
-	C.lay_set_behave(&z.ctx.ctx, z.layId, behave)
+func (z *LayItem) SetBehave(behave int) {
+	C.lay_set_behave(&z.ctx.ctx, z.layId, C.int32_t(behave))
 }
 func (z *LayItem) Insert(obj *LayItem) {
 	C.lay_insert(&obj.ctx.ctx, z.layId, obj.layId)
@@ -104,6 +104,6 @@ func (z *LayItem) GetRect() (ret Rect) {
 	ret.Y2 = int(res.y2) + ret.Y1
 	return
 }
-func (z *LayItem) SetContain(behave C.uint) {
+func (z *LayItem) SetContain(behave C.int) {
 	C.lay_set_contain(&z.ctx.ctx, z.layId, behave)
 }

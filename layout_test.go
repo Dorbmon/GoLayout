@@ -25,7 +25,7 @@ func TestAll(t *testing.T) {
 		return
 	}
 	r = content_view.GetRect()
-	if r.X1 != 400 || r.Y1 != 0 || r.X2 != 880 || r.Y2 != 720 {
+	if r.X1 != 400 || r.Y1 != 0 || r.X2 != 1280 || r.Y2 != 720 {
 		t.FailNow()
 		return
 	}
